@@ -9,7 +9,7 @@ Palette::Palette(std::vector<Color> colors) : colors_(std::move(colors)) {
     }
 }
 
-bool Palette::isValidColor(uint8_t index) const {
+bool Palette::isValidColor(uint8_t index) const noexcept {
     return index < colors_.size();
 }
 
@@ -20,11 +20,11 @@ const Color& Palette::getColor(uint8_t index) const {
     return colors_[index];
 }
 
-size_t Palette::size() const {
+size_t Palette::size() const noexcept {
     return colors_.size();
 }
 
-const std::vector<Color>& Palette::getColors() const {
+const std::vector<Color>& Palette::getColors() const noexcept {
     return colors_;
 }
 

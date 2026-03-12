@@ -2,14 +2,12 @@
 
 #include "models/Canvas.hpp"
 #include <string>
+#include <string_view>
 #include <optional>
 
 namespace cppplace {
 
-class PersistenceService {
-public:
-    static bool saveCanvas(const Canvas& canvas, const std::string& filepath);
-    static std::optional<Canvas> loadCanvas(const std::string& filepath);
-};
+bool saveCanvas(const Canvas& canvas, std::string_view filepath);
+std::optional<Canvas> loadCanvas(std::string_view filepath);
 
 } // namespace cppplace

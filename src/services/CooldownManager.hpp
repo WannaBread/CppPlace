@@ -3,23 +3,24 @@
 #include <boost/thread/shared_mutex.hpp>
 #include <chrono>
 #include <string>
+#include <string_view>
 #include <unordered_map>
 
 namespace cppplace {
 
 class CooldownManager {
 public:
-    explicit CooldownManager(std::chrono::seconds cooldown_duration);
+    explicit CooldownManager(std::chrono::duration<double> cooldown_duration);
 
-    bool canPlace(const std::string& username) const;
-    std::chrono::seconds getRemainingTime(const std::string& username) const;
-    void recordPlacement(const std::string& username);
+    bool canPlace(std::string_view username) const;
+    std::chrono::duration<double> getRemainingTime(std::string_view username) const;
+    void recordPlacement(std::string_view username);
 
-    std::chrono::seconds getCooldownDuration() const { return cooldown_duration_; }
+    std::chrono::duration<double> getCooldownDuration() const noexcept { return cooldown_duration_; }
 
 private:
     mutable boost::shared_mutex mutex_;
-    std::chrono::seconds cooldown_duration_;
+    std::chrono::duration<double> cooldown_duration_;
     std::unordered_map<std::string, std::chrono::system_clock::time_point> last_placement_;
 };
 

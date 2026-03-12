@@ -13,7 +13,7 @@ CanvasService::CanvasService(size_t width, size_t height,
       cooldown_manager_(std::move(cooldown_manager)),
       event_bus_(std::move(event_bus)) {}
 
-Result<void> CanvasService::placePixel(const std::string& token, size_t x, size_t y, uint8_t color_index) {
+Result<void> CanvasService::placePixel(std::string_view token, size_t x, size_t y, uint8_t color_index) {
     // 1. Validate session
     auto username_opt = session_manager_->validateSession(token);
     if (!username_opt.has_value()) {
@@ -66,25 +66,25 @@ size_t CanvasService::getOnlineCount() const {
     return online_tokens_.size();
 }
 
-void CanvasService::connectUser(const std::string& token) {
+void CanvasService::connectUser(std::string_view token) {
     auto username = session_manager_->validateSession(token);
     if (!username.has_value()) return;
 
     size_t count;
     {
         boost::unique_lock<boost::shared_mutex> lock(online_mutex_);
-        online_tokens_.insert(token);
+        online_tokens_.insert(std::string(token));
         count = online_tokens_.size();
     }
 
     event_bus_->publish(UserCountChangedEvent{count});
 }
 
-void CanvasService::disconnectUser(const std::string& token) {
+void CanvasService::disconnectUser(std::string_view token) {
     size_t count;
     {
         boost::unique_lock<boost::shared_mutex> lock(online_mutex_);
-        online_tokens_.erase(token);
+        online_tokens_.erase(std::string(token));
         count = online_tokens_.size();
     }
 

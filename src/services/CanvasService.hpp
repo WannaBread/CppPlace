@@ -10,6 +10,8 @@
 #include <boost/thread/shared_mutex.hpp>
 #include <memory>
 #include <set>
+#include <string>
+#include <string_view>
 
 namespace cppplace {
 
@@ -21,16 +23,16 @@ public:
                   std::shared_ptr<CooldownManager> cooldown_manager,
                   std::shared_ptr<EventBus> event_bus);
 
-    Result<void> placePixel(const std::string& token, size_t x, size_t y, uint8_t color_index);
+    Result<void> placePixel(std::string_view token, size_t x, size_t y, uint8_t color_index);
     std::vector<Pixel> getCanvasState() const;
     size_t getOnlineCount() const;
 
-    void connectUser(const std::string& token);
-    void disconnectUser(const std::string& token);
+    void connectUser(std::string_view token);
+    void disconnectUser(std::string_view token);
 
     const Canvas& getCanvas() const { return canvas_; }
-    size_t getWidth() const { return canvas_.getWidth(); }
-    size_t getHeight() const { return canvas_.getHeight(); }
+    size_t getWidth() const noexcept { return canvas_.getWidth(); }
+    size_t getHeight() const noexcept { return canvas_.getHeight(); }
 
 private:
     mutable boost::shared_mutex canvas_mutex_;

@@ -7,15 +7,16 @@
 #include <boost/thread/shared_mutex.hpp>
 #include <unordered_map>
 #include <string>
+#include <string_view>
 
 namespace cppplace {
 
 class UserStore {
 public:
-    Result<void> registerUser(const std::string& username, const std::string& password);
-    Result<std::string> authenticate(const std::string& username, const std::string& password);
+    Result<void> registerUser(std::string_view username, std::string_view password);
+    Result<std::string> authenticate(std::string_view username, std::string_view password);
 
-    bool userExists(const std::string& username) const;
+    bool userExists(std::string_view username) const;
     size_t userCount() const;
 
 private:

@@ -3,15 +3,16 @@
 #include <boost/thread/shared_mutex.hpp>
 #include <unordered_map>
 #include <string>
+#include <string_view>
 #include <optional>
 
 namespace cppplace {
 
 class SessionManager {
 public:
-    std::string createSession(const std::string& username);
-    std::optional<std::string> validateSession(const std::string& token) const;
-    bool removeSession(const std::string& token);
+    std::string createSession(std::string_view username);
+    std::optional<std::string> validateSession(std::string_view token) const;
+    bool removeSession(std::string_view token);
     size_t activeSessionCount() const;
 
 private:

@@ -25,9 +25,9 @@ TEST_F(PersistenceTest, SaveAndLoadRoundTrip) {
     canvas.setPixel(4, 4, 15, "bob");
     canvas.setPixel(2, 3, 8, "charlie");
 
-    ASSERT_TRUE(PersistenceService::saveCanvas(canvas, test_path.string()));
+    ASSERT_TRUE(saveCanvas(canvas, test_path.string()));
 
-    auto loaded = PersistenceService::loadCanvas(test_path.string());
+    auto loaded = loadCanvas(test_path.string());
     ASSERT_TRUE(loaded.has_value());
 
     EXPECT_EQ(loaded->getWidth(), 5u);
@@ -44,7 +44,7 @@ TEST_F(PersistenceTest, SaveAndLoadRoundTrip) {
 }
 
 TEST_F(PersistenceTest, LoadNonExistentFile) {
-    auto loaded = PersistenceService::loadCanvas("/nonexistent/path/canvas.bin");
+    auto loaded = loadCanvas("/nonexistent/path/canvas.bin");
     EXPECT_FALSE(loaded.has_value());
 }
 
@@ -55,16 +55,16 @@ TEST_F(PersistenceTest, LoadCorruptedFile) {
         ofs << "this is not a valid canvas file";
     }
 
-    auto loaded = PersistenceService::loadCanvas(test_path.string());
+    auto loaded = loadCanvas(test_path.string());
     EXPECT_FALSE(loaded.has_value());
 }
 
 TEST_F(PersistenceTest, EmptyCanvas) {
     Canvas canvas(1, 1);
 
-    ASSERT_TRUE(PersistenceService::saveCanvas(canvas, test_path.string()));
+    ASSERT_TRUE(saveCanvas(canvas, test_path.string()));
 
-    auto loaded = PersistenceService::loadCanvas(test_path.string());
+    auto loaded = loadCanvas(test_path.string());
     ASSERT_TRUE(loaded.has_value());
     EXPECT_EQ(loaded->getWidth(), 1u);
     EXPECT_EQ(loaded->getHeight(), 1u);
@@ -79,9 +79,9 @@ TEST_F(PersistenceTest, LargeCanvas) {
         }
     }
 
-    ASSERT_TRUE(PersistenceService::saveCanvas(canvas, test_path.string()));
+    ASSERT_TRUE(saveCanvas(canvas, test_path.string()));
 
-    auto loaded = PersistenceService::loadCanvas(test_path.string());
+    auto loaded = loadCanvas(test_path.string());
     ASSERT_TRUE(loaded.has_value());
     EXPECT_EQ(loaded->getWidth(), 100u);
     EXPECT_EQ(loaded->getHeight(), 100u);
@@ -94,13 +94,13 @@ TEST_F(PersistenceTest, LargeCanvas) {
 TEST_F(PersistenceTest, OverwriteExistingFile) {
     Canvas canvas1(3, 3);
     canvas1.setPixel(0, 0, 1, "first");
-    PersistenceService::saveCanvas(canvas1, test_path.string());
+    saveCanvas(canvas1, test_path.string());
 
     Canvas canvas2(5, 5);
     canvas2.setPixel(0, 0, 2, "second");
-    PersistenceService::saveCanvas(canvas2, test_path.string());
+    saveCanvas(canvas2, test_path.string());
 
-    auto loaded = PersistenceService::loadCanvas(test_path.string());
+    auto loaded = loadCanvas(test_path.string());
     ASSERT_TRUE(loaded.has_value());
     EXPECT_EQ(loaded->getWidth(), 5u);
     EXPECT_EQ(loaded->getPixel(0, 0).color_index, 2);

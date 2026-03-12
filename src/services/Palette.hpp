@@ -19,10 +19,10 @@ class Palette {
 public:
     explicit Palette(std::vector<Color> colors);
 
-    bool isValidColor(uint8_t index) const;
+    bool isValidColor(uint8_t index) const noexcept;
     const Color& getColor(uint8_t index) const;
-    size_t size() const;
-    const std::vector<Color>& getColors() const;
+    size_t size() const noexcept;
+    const std::vector<Color>& getColors() const noexcept;
 
     static Palette createDefault();
 

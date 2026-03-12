@@ -9,15 +9,13 @@ protected:
     void SetUp() override {
         palette = std::make_shared<Palette>(Palette::createDefault());
         session_manager = std::make_shared<SessionManager>();
-        // Use 0 second cooldown for most tests to avoid waits
-        cooldown_manager = std::make_shared<CooldownManager>(std::chrono::seconds(0));
+        cooldown_manager = std::make_shared<CooldownManager>(std::chrono::duration<double>(0.0));
         event_bus = std::make_shared<EventBus>();
 
         service = std::make_unique<CanvasService>(
             10, 10, palette, session_manager, cooldown_manager, event_bus
         );
 
-        // Register a test user
         token = session_manager->createSession("testuser");
     }
 
@@ -59,7 +57,7 @@ TEST_F(CanvasServiceTest, PlacePixelInvalidCoordinates) {
 
 TEST_F(CanvasServiceTest, PlacePixelCooldownActive) {
     // Create a service with a cooldown
-    auto cd_manager = std::make_shared<CooldownManager>(std::chrono::seconds(60));
+    auto cd_manager = std::make_shared<CooldownManager>(std::chrono::duration<double>(60.0));
     CanvasService cd_service(10, 10, palette, session_manager, cd_manager, event_bus);
 
     auto result1 = cd_service.placePixel(token, 0, 0, 1);

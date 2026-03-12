@@ -1,7 +1,9 @@
 #pragma once
 
 #include <string>
+#include <string_view>
 #include <optional>
+#include <stdexcept>
 
 namespace cppplace {
 
@@ -16,7 +18,7 @@ enum class ErrorCode {
     InternalError
 };
 
-inline std::string errorCodeToString(ErrorCode code) {
+inline std::string_view errorCodeToString(ErrorCode code) noexcept {
     switch (code) {
         case ErrorCode::Success:            return "Success";
         case ErrorCode::InvalidCoordinates: return "Invalid coordinates";
@@ -26,9 +28,31 @@ inline std::string errorCodeToString(ErrorCode code) {
         case ErrorCode::UsernameTaken:      return "Username already taken";
         case ErrorCode::InvalidCredentials: return "Invalid credentials";
         case ErrorCode::InternalError:      return "Internal error";
+        default:                            return "Unknown error";
     }
-    return "Unknown error";
 }
+
+// Custom exception wrapper
+class CppPlaceError : public std::runtime_error {
+public:
+    CppPlaceError(ErrorCode code, const std::string& message)
+        : std::runtime_error(message), code_(code) {}
+
+    ErrorCode code() const noexcept { return code_; }
+
+    struct RpcError {
+        ErrorCode code;
+        std::string_view code_string;
+        std::string message;
+    };
+
+    RpcError toRpcError() const {
+        return { code_, errorCodeToString(code_), what() };
+    }
+
+private:
+    ErrorCode code_;
+};
 
 template <typename T>
 class Result {
@@ -47,12 +71,16 @@ public:
         return r;
     }
 
-    bool ok() const { return code_ == ErrorCode::Success; }
-    ErrorCode code() const { return code_; }
-    const std::string& message() const { return message_; }
+    bool ok() const noexcept { return code_ == ErrorCode::Success; }
+    ErrorCode code() const noexcept { return code_; }
+    std::string_view message() const noexcept { return message_; }
 
     const T& value() const { return value_.value(); }
     T& value() { return value_.value(); }
+
+    CppPlaceError toError() const {
+        return CppPlaceError(code_, std::string(message_));
+    }
 
 private:
     std::optional<T> value_;
@@ -77,9 +105,13 @@ public:
         return r;
     }
 
-    bool ok() const { return code_ == ErrorCode::Success; }
-    ErrorCode code() const { return code_; }
-    const std::string& message() const { return message_; }
+    bool ok() const noexcept { return code_ == ErrorCode::Success; }
+    ErrorCode code() const noexcept { return code_; }
+    std::string_view message() const noexcept { return message_; }
+
+    CppPlaceError toError() const {
+        return CppPlaceError(code_, std::string(message_));
+    }
 
 private:
     ErrorCode code_ = ErrorCode::Success;

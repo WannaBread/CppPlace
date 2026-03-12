@@ -5,13 +5,14 @@
 namespace cppplace {
 
 namespace {
-    const uint32_t MAGIC = 0x43505043; // "CPPC"
-    const uint32_t VERSION = 1;
+    constexpr uint32_t MAGIC = 0x43505043; // "CPPC"
+    constexpr uint32_t VERSION = 1;
 }
 
-bool PersistenceService::saveCanvas(const Canvas& canvas, const std::string& filepath) {
+bool saveCanvas(const Canvas& canvas, std::string_view filepath) {
     // Write to temp file first, then rename for atomicity
-    std::string tmp_path = filepath + ".tmp";
+    std::string filepath_str(filepath);
+    std::string tmp_path = filepath_str + ".tmp";
 
     {
         std::ofstream ofs(tmp_path, std::ios::binary);
@@ -42,8 +43,8 @@ bool PersistenceService::saveCanvas(const Canvas& canvas, const std::string& fil
     }
 
     // Atomic rename
-    std::remove(filepath.c_str());
-    if (std::rename(tmp_path.c_str(), filepath.c_str()) != 0) {
+    std::remove(filepath_str.c_str());
+    if (std::rename(tmp_path.c_str(), filepath_str.c_str()) != 0) {
         std::remove(tmp_path.c_str());
         return false;
     }
@@ -51,26 +52,30 @@ bool PersistenceService::saveCanvas(const Canvas& canvas, const std::string& fil
     return true;
 }
 
-std::optional<Canvas> PersistenceService::loadCanvas(const std::string& filepath) {
-    std::ifstream ifs(filepath, std::ios::binary);
+std::optional<Canvas> loadCanvas(std::string_view filepath) {
+    std::ifstream ifs(std::string(filepath), std::ios::binary);
     if (!ifs.is_open()) return std::nullopt;
 
     // Read header
-    uint32_t magic, version, width, height;
-    ifs.read(reinterpret_cast<char*>(&magic), sizeof(magic));
-    ifs.read(reinterpret_cast<char*>(&version), sizeof(version));
-    ifs.read(reinterpret_cast<char*>(&width), sizeof(width));
-    ifs.read(reinterpret_cast<char*>(&height), sizeof(height));
+    struct Header {
+        uint32_t magic;
+        uint32_t version;
+        uint32_t width;
+        uint32_t height;
+    };
 
-    if (!ifs.good() || magic != MAGIC || version != VERSION) {
+    Header header;
+    ifs.read(reinterpret_cast<char*>(&header), sizeof(Header));
+
+    if (!ifs.good() || header.magic != MAGIC || header.version != VERSION) {
         return std::nullopt;
     }
 
-    Canvas canvas(width, height);
+    Canvas canvas(header.width, header.height);
 
     // Read pixel data
-    for (uint32_t y = 0; y < height; ++y) {
-        for (uint32_t x = 0; x < width; ++x) {
+    for (uint32_t y = 0; y < header.height; ++y) {
+        for (uint32_t x = 0; x < header.width; ++x) {
             uint8_t color_index;
             ifs.read(reinterpret_cast<char*>(&color_index), sizeof(color_index));
 
