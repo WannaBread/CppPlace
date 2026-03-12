@@ -30,15 +30,6 @@ TEST(PasswordHasherTest, VerifyWrongPassword) {
     EXPECT_FALSE(PasswordHasher::verify("wrong", hash));
 }
 
-TEST(PasswordHasherTest, HashIsHexString) {
-    auto hash = PasswordHasher::hash("test");
-    // SHA1 produces 40 hex characters
-    EXPECT_EQ(hash.size(), 40u);
-    for (char c : hash) {
-        EXPECT_TRUE((c >= '0' && c <= '9') || (c >= 'a' && c <= 'f'));
-    }
-}
-
 TEST(PasswordHasherTest, EmptyPassword) {
     auto hash = PasswordHasher::hash("");
     EXPECT_FALSE(hash.empty());

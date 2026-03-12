@@ -45,4 +45,4 @@ private:
     std::set<std::string> online_tokens_;
 };
 
-} // namespace cppplace
+} 

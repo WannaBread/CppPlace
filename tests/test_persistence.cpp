@@ -49,7 +49,6 @@ TEST_F(PersistenceTest, LoadNonExistentFile) {
 }
 
 TEST_F(PersistenceTest, LoadCorruptedFile) {
-    // Write garbage data
     {
         std::ofstream ofs(test_path, std::ios::binary);
         ofs << "this is not a valid canvas file";
@@ -86,7 +85,6 @@ TEST_F(PersistenceTest, LargeCanvas) {
     EXPECT_EQ(loaded->getWidth(), 100u);
     EXPECT_EQ(loaded->getHeight(), 100u);
 
-    // Spot check
     EXPECT_EQ(loaded->getPixel(50, 50).color_index, (50 + 50) % 16);
     EXPECT_EQ(loaded->getPixel(50, 50).user_id, "user50");
 }

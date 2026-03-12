@@ -15,7 +15,6 @@ void EventBus::unsubscribe(SubscriptionId id) {
 }
 
 void EventBus::publish(const Event& event) {
-    // Copy subscribers under read lock to avoid holding lock during callbacks
     std::vector<EventCallback> callbacks;
     {
         boost::shared_lock<boost::shared_mutex> lock(mutex_);
@@ -34,4 +33,4 @@ size_t EventBus::subscriberCount() const {
     return subscribers_.size();
 }
 
-} // namespace cppplace
+}

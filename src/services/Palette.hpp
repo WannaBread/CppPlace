@@ -30,4 +30,4 @@ private:
     std::vector<Color> colors_;
 };
 
-} // namespace cppplace
+}

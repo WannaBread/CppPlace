@@ -24,4 +24,4 @@ private:
     std::unordered_map<std::string, User> users_;
 };
 
-} // namespace cppplace
+}

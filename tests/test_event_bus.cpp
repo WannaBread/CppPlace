@@ -98,7 +98,6 @@ TEST(EventBusTest, SubscriberCount) {
 
 TEST(EventBusTest, UnsubscribeNonExistent) {
     EventBus bus;
-    // Should not throw
     bus.unsubscribe(99999);
     EXPECT_EQ(bus.subscriberCount(), 0u);
 }

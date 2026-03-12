@@ -29,4 +29,4 @@ size_t Canvas::index(size_t x, size_t y) const noexcept {
     return y * width_ + x;
 }
 
-} // namespace cppplace
+}

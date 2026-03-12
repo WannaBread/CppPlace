@@ -17,7 +17,7 @@ public:
 
 private:
     mutable boost::shared_mutex mutex_;
-    std::unordered_map<std::string, std::string> token_to_user_; // token -> username
+    std::unordered_map<std::string, std::string> token_to_user_;
 };
 
-} // namespace cppplace
+}

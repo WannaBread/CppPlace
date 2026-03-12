@@ -65,7 +65,6 @@ TEST_F(UserStoreTest, MultipleUsers) {
 
 TEST_F(UserStoreTest, PasswordIsHashed) {
     store.registerUser("alice", "password123");
-    // Should still authenticate (hash comparison works)
     auto result = store.authenticate("alice", "password123");
     EXPECT_TRUE(result.ok());
 }

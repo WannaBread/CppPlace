@@ -46,4 +46,4 @@ size_t UserStore::userCount() const {
     return users_.size();
 }
 
-} // namespace cppplace
+}

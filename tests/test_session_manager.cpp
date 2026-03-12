@@ -55,7 +55,6 @@ TEST_F(SessionManagerTest, MultipleSessionsSameUser) {
     EXPECT_NE(token1, token2);
     EXPECT_EQ(manager.activeSessionCount(), 2u);
 
-    // Both should be valid
     EXPECT_TRUE(manager.validateSession(token1).has_value());
     EXPECT_TRUE(manager.validateSession(token2).has_value());
 }

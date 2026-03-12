@@ -29,4 +29,4 @@ size_t SessionManager::activeSessionCount() const {
     return token_to_user_.size();
 }
 
-} // namespace cppplace
+} 

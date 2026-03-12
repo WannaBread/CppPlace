@@ -32,7 +32,6 @@ inline std::string_view errorCodeToString(ErrorCode code) noexcept {
     }
 }
 
-// Custom exception wrapper
 class CppPlaceError : public std::runtime_error {
 public:
     CppPlaceError(ErrorCode code, const std::string& message)

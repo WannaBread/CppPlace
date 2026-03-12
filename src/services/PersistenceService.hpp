@@ -10,4 +10,4 @@ namespace cppplace {
 bool saveCanvas(const Canvas& canvas, std::string_view filepath);
 std::optional<Canvas> loadCanvas(std::string_view filepath);
 
-} // namespace cppplace
+} 

@@ -24,4 +24,4 @@ private:
     std::unordered_map<std::string, std::chrono::system_clock::time_point> last_placement_;
 };
 
-} // namespace cppplace
+}

@@ -41,4 +41,4 @@ private:
     std::atomic<SubscriptionId> next_id_{1};
 };
 
-} // namespace cppplace
+}

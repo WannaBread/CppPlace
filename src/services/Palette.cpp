@@ -49,4 +49,4 @@ Palette Palette::createDefault() {
     });
 }
 
-} // namespace cppplace
+}

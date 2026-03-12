@@ -34,4 +34,4 @@ void CooldownManager::recordPlacement(std::string_view username) {
     last_placement_[std::string(username)] = std::chrono::system_clock::now();
 }
 
-} // namespace cppplace
+} 

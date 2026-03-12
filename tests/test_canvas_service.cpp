@@ -86,7 +86,7 @@ TEST_F(CanvasServiceTest, PlacePixelNotifiesSubscribers) {
 
 TEST_F(CanvasServiceTest, GetCanvasState) {
     auto state = service->getCanvasState();
-    EXPECT_EQ(state.size(), 100u); // 10x10
+    EXPECT_EQ(state.size(), 100u);
 }
 
 TEST_F(CanvasServiceTest, ConnectDisconnectUser) {
@@ -125,7 +125,6 @@ TEST_F(CanvasServiceTest, GetWidthAndHeight) {
 }
 
 TEST_F(CanvasServiceTest, MultiplePlacementsNoCooldown) {
-    // With 0 cooldown, multiple placements should all succeed
     for (int i = 0; i < 5; ++i) {
         auto result = service->placePixel(token, i, 0, static_cast<uint8_t>(i));
         EXPECT_TRUE(result.ok()) << "Placement " << i << " failed";

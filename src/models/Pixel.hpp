@@ -16,4 +16,4 @@ struct Pixel {
     }
 };
 
-} // namespace cppplace
+}

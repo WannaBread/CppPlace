@@ -9,4 +9,4 @@ struct User {
     std::string password_hash;
 };
 
-} // namespace cppplace
+}

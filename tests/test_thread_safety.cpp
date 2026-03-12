@@ -182,8 +182,6 @@ TYPED_TEST(TypedThreadSafetyTest, ConcurrentEventPublishing) {
     EXPECT_EQ(received_count.load(), static_cast<int>(NUM_THREADS * EVENTS_PER_THREAD));
 }
 
-// Non-templated tests for specific scenarios
-
 class ThreadSafetyTest : public ::testing::Test {
 protected:
     void SetUp() override {
@@ -217,7 +215,6 @@ TEST_F(ThreadSafetyTest, ConcurrentUserRegistration) {
         for (int t = 0; t < NUM_THREADS; ++t) {
             boost::asio::post(pool, [&, t]() {
                 for (int i = 0; i < USERS_PER_THREAD; ++i) {
-                    // Some usernames will collide across threads
                     std::string username = "user" + std::to_string(i);
                     auto result = store.registerUser(username, "pass" + std::to_string(t));
                     if (result.ok()) {
@@ -231,14 +228,12 @@ TEST_F(ThreadSafetyTest, ConcurrentUserRegistration) {
         pool.join();
     }
 
-    // Each unique username should be registered exactly once
     EXPECT_EQ(store.userCount(), static_cast<size_t>(USERS_PER_THREAD));
     EXPECT_EQ(success_count.load(), USERS_PER_THREAD);
     EXPECT_EQ(duplicate_count.load(), USERS_PER_THREAD * (NUM_THREADS - 1));
 }
 
 TEST_F(ThreadSafetyTest, ConcurrentReadWrite) {
-    // One thread writing, multiple threads reading
     const int NUM_READERS = 4;
     const int NUM_WRITES = 200;
     const int READS_PER_READER = 200;
@@ -251,7 +246,6 @@ TEST_F(ThreadSafetyTest, ConcurrentReadWrite) {
     {
         boost::asio::thread_pool pool(NUM_READERS + 1);
 
-        // Writer thread
         boost::asio::post(pool, [&]() {
             for (int i = 0; i < NUM_WRITES; ++i) {
                 size_t x = i % 100;
@@ -261,7 +255,6 @@ TEST_F(ThreadSafetyTest, ConcurrentReadWrite) {
             writing_done = true;
         });
 
-        // Reader threads
         for (int r = 0; r < NUM_READERS; ++r) {
             boost::asio::post(pool, [&]() {
                 for (int i = 0; i < READS_PER_READER; ++i) {

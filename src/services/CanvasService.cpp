@@ -14,19 +14,16 @@ CanvasService::CanvasService(size_t width, size_t height,
       event_bus_(std::move(event_bus)) {}
 
 Result<void> CanvasService::placePixel(std::string_view token, size_t x, size_t y, uint8_t color_index) {
-    // 1. Validate session
     auto username_opt = session_manager_->validateSession(token);
     if (!username_opt.has_value()) {
         return Result<void>::failure(ErrorCode::Unauthorized, "Invalid or expired session");
     }
     const std::string& username = username_opt.value();
 
-    // 2. Validate color
     if (!palette_->isValidColor(color_index)) {
         return Result<void>::failure(ErrorCode::InvalidColor, "Color index out of palette range");
     }
 
-    // 3. Validate coordinates
     {
         boost::shared_lock<boost::shared_mutex> lock(canvas_mutex_);
         if (!canvas_.isValidCoord(x, y)) {
@@ -34,23 +31,19 @@ Result<void> CanvasService::placePixel(std::string_view token, size_t x, size_t 
         }
     }
 
-    // 4. Check cooldown
     if (!cooldown_manager_->canPlace(username)) {
         auto remaining = cooldown_manager_->getRemainingTime(username);
         return Result<void>::failure(ErrorCode::CooldownActive,
             "Cooldown active, " + std::to_string(remaining.count()) + " seconds remaining");
     }
 
-    // 5. Place pixel
     {
         boost::unique_lock<boost::shared_mutex> lock(canvas_mutex_);
         canvas_.setPixel(x, y, color_index, username);
     }
 
-    // 6. Record cooldown
     cooldown_manager_->recordPlacement(username);
 
-    // 7. Notify subscribers
     event_bus_->publish(PixelPlacedEvent{x, y, color_index, username});
 
     return Result<void>::success();
@@ -91,4 +84,4 @@ void CanvasService::disconnectUser(std::string_view token) {
     event_bus_->publish(UserCountChangedEvent{count});
 }
 
-} // namespace cppplace
+}
