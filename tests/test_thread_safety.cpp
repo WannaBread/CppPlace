@@ -11,7 +11,6 @@
 
 using namespace cppplace;
 
-// Template-parameterized test fixture for different thread counts
 template <size_t NumThreads>
 class ThreadSafetyTestT : public ::testing::Test {
 protected:
@@ -49,7 +48,6 @@ TYPED_TEST(TypedThreadSafetyTest, ConcurrentPixelPlacements) {
     constexpr size_t NUM_THREADS = TypeParam::value;
     constexpr int PIXELS_PER_THREAD = 100;
 
-    // Create tokens for each thread
     std::vector<std::string> tokens;
     for (size_t i = 0; i < NUM_THREADS; ++i) {
         std::string username = "user" + std::to_string(i);
