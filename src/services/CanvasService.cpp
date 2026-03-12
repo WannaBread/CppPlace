@@ -24,12 +24,11 @@ Result<void> CanvasService::placePixel(std::string_view token, size_t x, size_t 
         return Result<void>::failure(ErrorCode::InvalidColor, "Color index out of palette range");
     }
 
-    {
-        boost::shared_lock<boost::shared_mutex> lock(canvas_mutex_);
-        if (!canvas_.isValidCoord(x, y)) {
-            return Result<void>::failure(ErrorCode::InvalidCoordinates, "Coordinates out of canvas bounds");
-        }
+    
+    if (!canvas_.isValidCoord(x, y)) {
+        return Result<void>::failure(ErrorCode::InvalidCoordinates, "Coordinates out of canvas bounds");
     }
+    
 
     if (!cooldown_manager_->canPlace(username)) {
         auto remaining = cooldown_manager_->getRemainingTime(username);
