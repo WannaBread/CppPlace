@@ -1,41 +1,39 @@
 #include "server/HttpServer.hpp"
-#include "server/RequestHandler.hpp"
+#include "server/HttpSession.hpp"
 
-#include <boost/beast/core.hpp>
-#include <boost/beast/http.hpp>
-#include <boost/asio/ip/tcp.hpp>
+#include <boost/asio/strand.hpp>
 #include <stdexcept>
-#include <thread>
 
 namespace cppplace {
 
-namespace beast = boost::beast;
-namespace http  = beast::http;
-namespace net   = boost::asio;
-using     tcp   = net::ip::tcp;
+namespace net = boost::asio;
+using     tcp = net::ip::tcp;
 
-// ── Construction ─────────────────────────────────────────────────────────────
+// ── Construction ──────────────────────────────────────────────────────────────
 
-HttpServer::HttpServer(net::io_context&              ioc,
-                       tcp::endpoint                 endpoint,
-                       std::shared_ptr<RequestHandler> handler)
-    : ioc_(ioc)
-    , acceptor_(ioc)
+HttpServer::HttpServer(tcp::endpoint                  endpoint,
+                       std::shared_ptr<RequestHandler> handler,
+                       unsigned int                    worker_threads)
+    : acceptor_(ioc_)
+    , signals_(ioc_, SIGINT, SIGTERM)
     , handler_(std::move(handler))
+    , worker_threads_(worker_threads)
 {
     boost::system::error_code ec;
 
     acceptor_.open(endpoint.protocol(), ec);
-    if (ec) throw std::runtime_error("acceptor open: " + ec.message());
+    if (ec) throw std::runtime_error("open: "   + ec.message());
 
     acceptor_.set_option(net::socket_base::reuse_address(true), ec);
-    if (ec) throw std::runtime_error("set_option reuse_address: " + ec.message());
+    if (ec) throw std::runtime_error("reuse: "  + ec.message());
 
     acceptor_.bind(endpoint, ec);
-    if (ec) throw std::runtime_error("bind: " + ec.message());
+    if (ec) throw std::runtime_error("bind: "   + ec.message());
 
     acceptor_.listen(net::socket_base::max_listen_connections, ec);
     if (ec) throw std::runtime_error("listen: " + ec.message());
+
+    signals_.async_wait([this](boost::system::error_code, int) { stop(); });
 }
 
 // ── Public interface ──────────────────────────────────────────────────────────
@@ -46,7 +44,15 @@ unsigned short HttpServer::port() const {
 
 void HttpServer::run() {
     doAccept();
+
+    workers_.reserve(worker_threads_ - 1);
+    for (unsigned int i = 1; i < worker_threads_; ++i)
+        workers_.emplace_back([this] { ioc_.run(); });
+
     ioc_.run();
+
+    for (auto& t : workers_)
+        if (t.joinable()) t.join();
 }
 
 void HttpServer::stop() {
@@ -55,36 +61,17 @@ void HttpServer::stop() {
     ioc_.stop();
 }
 
-// ── Private ───────────────────────────────────────────────────────────────────
-
 void HttpServer::doAccept() {
     acceptor_.async_accept(
+        net::make_strand(ioc_),
         [this](boost::system::error_code ec, tcp::socket socket) {
-            if (!ec) {
-                // Capture handler_ by value (shared_ptr) so the connection
-                // thread keeps services alive independently of HttpServer's
-                // own lifetime — prevents use-after-free when stop() races
-                // with in-flight connection threads.
-                std::thread([h = handler_, sock = std::move(socket)]() mutable {
-                    try {
-                        beast::flat_buffer               buffer;
-                        http::request<http::string_body> req;
-                        boost::system::error_code        err;
+            if (!ec)
+                std::make_shared<HttpSession>(std::move(socket), handler_)->start();
 
-                        http::read(sock, buffer, req, err);
-                        if (err) return;
-
-                        auto res = h->handle(req);
-                        http::write(sock, res, err);
-                        sock.shutdown(tcp::socket::shutdown_send, err);
-                    } catch (...) {}
-                }).detach();
-            }
             if (acceptor_.is_open())
                 doAccept();
         });
 }
 
-// handleConnection is no longer used — logic moved into the lambda above.
-
 } // namespace cppplace
+

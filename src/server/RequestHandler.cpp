@@ -12,8 +12,6 @@ namespace cppplace {
 namespace http = boost::beast::http;
 using json = nlohmann::json;
 
-// ── Construction ──────────────────────────────────────────────────────────────
-
 RequestHandler::RequestHandler(std::shared_ptr<UserStore>      user_store,
                                 std::shared_ptr<SessionManager> session_manager,
                                 std::shared_ptr<CanvasService>  canvas_service)
@@ -21,8 +19,6 @@ RequestHandler::RequestHandler(std::shared_ptr<UserStore>      user_store,
     , session_manager_(std::move(session_manager))
     , canvas_service_(std::move(canvas_service))
 {}
-
-// ── Routing ───────────────────────────────────────────────────────────────────
 
 RequestHandler::Response RequestHandler::handle(const Request& req) {
     const auto target = std::string(req.target());
@@ -36,8 +32,6 @@ RequestHandler::Response RequestHandler::handle(const Request& req) {
 
     return errorResponse(404, "Not found");
 }
-
-// ── Handlers ──────────────────────────────────────────────────────────────────
 
 RequestHandler::Response RequestHandler::handleRegister(const Request& req) {
     json body;
@@ -137,8 +131,6 @@ RequestHandler::Response RequestHandler::handlePlacePixel(const Request& req) {
 
     return jsonResponse(200, {{"success", true}});
 }
-
-// ── Helpers ───────────────────────────────────────────────────────────────────
 
 RequestHandler::Response RequestHandler::jsonResponse(unsigned status, json body) {
     Response res{static_cast<http::status>(status), 11};

@@ -86,10 +86,10 @@ protected:
         auto handler = std::make_shared<cppplace::RequestHandler>(
             user_store_, session_manager_, canvas_service_);
 
-        ioc_    = std::make_unique<net::io_context>();
+        // 1 worker thread in tests — deterministic, no port conflicts.
         server_ = std::make_unique<cppplace::HttpServer>(
-            *ioc_, tcp::endpoint(tcp::v4(), 0), handler);
-        port_   = server_->port();
+            tcp::endpoint(tcp::v4(), 0), handler, 1u);
+        port_ = server_->port();
 
         server_thread_ = std::thread([this] { server_->run(); });
         std::this_thread::sleep_for(std::chrono::milliseconds(50));
@@ -113,7 +113,6 @@ protected:
     }
 
     unsigned short port_{};
-    std::unique_ptr<net::io_context>         ioc_;
     std::unique_ptr<cppplace::HttpServer>    server_;
     std::thread                              server_thread_;
 
