@@ -16,8 +16,6 @@ void HttpSession::start() {
     doRead();
 }
 
-// ── Read ──────────────────────────────────────────────────────────────────────
-
 void HttpSession::doRead() {
     req_ = {};
 
@@ -35,8 +33,6 @@ void HttpSession::onRead(beast::error_code ec, std::size_t) {
 
     doWrite(handler_->handle(req_));
 }
-
-// ── Write ─────────────────────────────────────────────────────────────────────
 
 void HttpSession::doWrite(http::response<http::string_body> res) {
     res.keep_alive(req_.keep_alive());
@@ -66,4 +62,4 @@ void HttpSession::doClose() {
     stream_.socket().shutdown(tcp::socket::shutdown_send, ec);
 }
 
-} // namespace cppplace
+}

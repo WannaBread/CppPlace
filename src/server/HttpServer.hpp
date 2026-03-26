@@ -18,8 +18,8 @@ public:
                unsigned int worker_threads = std::max(1u,
                    std::thread::hardware_concurrency()));
 
-    void run();   // blocking
-    void stop();  // thread-safe
+    void run();   
+    void stop();
 
     unsigned short port() const;
 
@@ -34,5 +34,5 @@ private:
     std::vector<std::thread>        workers_;
 };
 
-} // namespace cppplace
+}
 

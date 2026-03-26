@@ -155,4 +155,4 @@ std::string RequestHandler::extractToken(const Request& req) const {
     return {};
 }
 
-} // namespace cppplace
+}

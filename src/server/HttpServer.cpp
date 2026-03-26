@@ -9,8 +9,6 @@ namespace cppplace {
 namespace net = boost::asio;
 using     tcp = net::ip::tcp;
 
-// ── Construction ──────────────────────────────────────────────────────────────
-
 HttpServer::HttpServer(tcp::endpoint                  endpoint,
                        std::shared_ptr<RequestHandler> handler,
                        unsigned int                    worker_threads)
@@ -35,8 +33,6 @@ HttpServer::HttpServer(tcp::endpoint                  endpoint,
 
     signals_.async_wait([this](boost::system::error_code, int) { stop(); });
 }
-
-// ── Public interface ──────────────────────────────────────────────────────────
 
 unsigned short HttpServer::port() const {
     return acceptor_.local_endpoint().port();
@@ -73,5 +69,5 @@ void HttpServer::doAccept() {
         });
 }
 
-} // namespace cppplace
+}
 

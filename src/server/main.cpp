@@ -39,7 +39,7 @@ T parseArg(const char* s, const char* name) {
     }
 }
 
-} // namespace
+}
 
 int main(int argc, char* argv[]) {
     unsigned short port         = 8080;

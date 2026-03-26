@@ -39,4 +39,4 @@ private:
     std::shared_ptr<CanvasService>  canvas_service_;
 };
 
-} // namespace cppplace
+}

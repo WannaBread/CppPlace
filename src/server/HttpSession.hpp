@@ -30,4 +30,4 @@ private:
     std::shared_ptr<RequestHandler>                                   handler_;
 };
 
-} // namespace cppplace
+}
