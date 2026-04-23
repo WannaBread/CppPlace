@@ -8,8 +8,6 @@ class QLabel;
 
 namespace cppplace::client {
 
-/// Modal login/register dialog. Reports the user's choice via signals — it
-/// doesn't talk to the network itself.
 class LoginDialog : public QDialog {
     Q_OBJECT
 public:

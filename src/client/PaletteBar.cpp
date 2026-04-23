@@ -22,8 +22,6 @@ PaletteBar::PaletteBar(const std::vector<PaletteEntry>& palette, QWidget* parent
         btn->setFixedSize(28, 28);
         btn->setToolTip(entry.name);
 
-        // Inline style so QSS doesn't have to know about every individual
-        // color — the swatch *is* the color it represents.
         btn->setStyleSheet(QString(
             "QPushButton#paletteSwatch {"
             "  background-color: %1;"

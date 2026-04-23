@@ -129,8 +129,7 @@ private slots:
 
 #include "test_canvas_renderer.moc"
 
-// Hand-rolled main so this TU can be linked alongside other QObject test
-// classes in the same binary.
+
 int runCanvasRendererTests(int argc, char** argv) {
     TestCanvasRenderer t;
     return QTest::qExec(&t, argc, argv);

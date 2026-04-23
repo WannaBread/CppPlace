@@ -10,8 +10,7 @@ int main(int argc, char* argv[]) {
     QApplication::setApplicationName("CppPlace");
     QApplication::setOrganizationName("CppPlace");
 
-    // Apply the bundled QSS theme. Loaded from a Qt resource so the binary is
-    // self-contained — no need to ship a .qss file alongside it.
+
     QFile qss(":/styles/styles.qss");
     if (qss.open(QFile::ReadOnly | QFile::Text)) {
         app.setStyleSheet(QString::fromUtf8(qss.readAll()));

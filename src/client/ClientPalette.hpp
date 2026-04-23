@@ -11,9 +11,6 @@ struct PaletteEntry {
     QString name;
 };
 
-/// 16-color default palette — must match the server's
-/// cppplace::Palette::createDefault() exactly so that color_index N renders
-/// the same on both ends.
 inline std::vector<PaletteEntry> defaultPalette() {
     return {
         {{255, 255, 255}, "White"},

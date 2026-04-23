@@ -18,7 +18,6 @@
 
 namespace cppplace::client {
 
-// std::vector<uint8_t> meta-type is registered in CanvasRenderer.cpp.
 
 MainWindow::MainWindow(const QUrl& serverUrl, QWidget* parent)
     : QMainWindow(parent), base_url_(serverUrl) {
@@ -28,8 +27,6 @@ MainWindow::MainWindow(const QUrl& serverUrl, QWidget* parent)
 }
 
 MainWindow::~MainWindow() {
-    // Quit threads cleanly. Workers were created with `new` and parented to
-    // their thread via deleteLater on QThread::finished (see startWorkers).
     if (net_thread_)    { net_thread_->quit();    net_thread_->wait(); }
     if (render_thread_) { render_thread_->quit(); render_thread_->wait(); }
 }
@@ -76,11 +73,10 @@ void MainWindow::buildUi() {
 void MainWindow::startWorkers() {
     // ── Network worker thread ─────────────────────────────────────────────
     net_thread_ = new QThread(this);
-    network_    = new NetworkWorker;          // no parent — moved to thread
+    network_    = new NetworkWorker;
     network_->setBaseUrl(base_url_);
     network_->moveToThread(net_thread_);
 
-    // init() must run inside the worker thread (creates the QNAM there).
     connect(net_thread_, &QThread::started,  network_, &NetworkWorker::init);
     connect(net_thread_, &QThread::finished, network_, &QObject::deleteLater);
 
@@ -106,8 +102,6 @@ void MainWindow::startWorkers() {
 
     render_thread_->start();
 
-    // Periodic poll for fresh canvas state. Lives on the GUI thread but the
-    // actual fetch happens in the network thread (queued connection).
     poll_ = new QTimer(this);
     poll_->setInterval(2000);
     connect(poll_, &QTimer::timeout, network_, &NetworkWorker::fetchCanvas);
@@ -142,8 +136,6 @@ void MainWindow::onCanvasReceived(int w, int h, int online,
     height_ = h;
     status_->setText(QString("%1x%2 — %3 online").arg(w).arg(h).arg(online));
 
-    // Hand off to renderer thread. The vector is copied into the queued event,
-    // which is exactly what we want — renderer owns its own copy.
     QMetaObject::invokeMethod(renderer_, "renderCanvas", Qt::QueuedConnection,
         Q_ARG(int, w), Q_ARG(int, h),
         Q_ARG(std::vector<uint8_t>, pixels), Q_ARG(int, scale_));
@@ -156,7 +148,6 @@ void MainWindow::onPixelClicked(int x, int y) {
 }
 
 void MainWindow::onPixelPlaced(int x, int y, int colorIndex) {
-    // Optimistic patch: avoid a full refetch for our own placement.
     QMetaObject::invokeMethod(renderer_, "renderPatch", Qt::QueuedConnection,
         Q_ARG(int, x), Q_ARG(int, y),
         Q_ARG(int, colorIndex), Q_ARG(int, scale_));

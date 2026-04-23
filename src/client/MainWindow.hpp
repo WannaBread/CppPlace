@@ -18,18 +18,6 @@ class CanvasView;
 class PaletteBar;
 class LoginDialog;
 
-/// Owns the two worker threads and ferries data between them and the GUI.
-///
-///   GUI thread ───── signal ────▶ NetworkWorker (net thread)
-///                                     │
-///                  signal             ▼ HTTP
-///   GUI thread ◀─────────────── server reply
-///        │
-///        ├──▶ CanvasRenderer (render thread) ──signal──▶ CanvasView (GUI)
-///        └──▶ status updates
-///
-/// All cross-thread arrows are queued connections (Qt picks this automatically
-/// when sender and receiver live in different threads).
 class MainWindow : public QMainWindow {
     Q_OBJECT
 public:
@@ -55,13 +43,11 @@ private:
 
     QUrl base_url_;
 
-    // Workers (live on their own threads)
     QThread*        net_thread_    = nullptr;
     QThread*        render_thread_ = nullptr;
     NetworkWorker*  network_       = nullptr;
     CanvasRenderer* renderer_      = nullptr;
 
-    // GUI
     CanvasView*     view_     = nullptr;
     PaletteBar*     palette_  = nullptr;
     QScrollArea*    scroll_   = nullptr;

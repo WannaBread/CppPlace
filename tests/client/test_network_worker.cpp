@@ -25,8 +25,7 @@ using cppplace::client::NetworkWorker;
 
 namespace {
 
-/// In-process server, on a free port. Brought up per-test so the suite
-/// remains hermetic — no leaking state between tests.
+
 class ServerFixture {
 public:
     ServerFixture() {

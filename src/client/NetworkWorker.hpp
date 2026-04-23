@@ -12,9 +12,6 @@ class QNetworkReply;
 
 namespace cppplace::client {
 
-/// Lives in its own QThread. All HTTP requests to the server happen here so
-/// the GUI thread never blocks on network I/O. Communication with the rest
-/// of the app is purely via signals/slots (queued connections across threads).
 class NetworkWorker : public QObject {
     Q_OBJECT
 public:
@@ -25,8 +22,6 @@ public:
     QString token() const { return token_; }
 
 public slots:
-    /// Must be invoked once after moveToThread() so QNetworkAccessManager is
-    /// created in the worker thread (Qt requirement).
     void init();
 
     void registerUser(const QString& username, const QString& password);

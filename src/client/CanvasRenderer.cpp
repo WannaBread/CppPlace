@@ -6,8 +6,6 @@
 namespace cppplace::client {
 
 namespace {
-    // Required so Q_ARG(std::vector<uint8_t>, ...) works with queued
-    // connections (Qt copies the argument via QMetaType).
     int registerVecMeta() {
         qRegisterMetaType<std::vector<uint8_t>>("std::vector<uint8_t>");
         return 0;
@@ -23,7 +21,7 @@ void CanvasRenderer::setPalette(std::vector<QColor> palette) {
 
 QColor CanvasRenderer::colorOf(uint8_t index) const {
     if (index < palette_.size()) return palette_[index];
-    return Qt::magenta; // sentinel for unknown index
+    return Qt::magenta;
 }
 
 void CanvasRenderer::renderCanvas(int width, int height,
@@ -39,9 +37,6 @@ void CanvasRenderer::renderCanvas(int width, int height,
 
     QImage img(width * scale, height * scale, QImage::Format_RGB32);
 
-    // Draw each logical pixel as a `scale x scale` block. We work directly on
-    // image scanlines to avoid the per-pixel overhead of QPainter — this
-    // matters when the canvas is 1000x1000.
     for (int y = 0; y < height; ++y) {
         for (int sy = 0; sy < scale; ++sy) {
             QRgb* line = reinterpret_cast<QRgb*>(img.scanLine(y * scale + sy));
@@ -59,7 +54,7 @@ void CanvasRenderer::renderCanvas(int width, int height,
 
 void CanvasRenderer::renderPatch(int x, int y, int colorIndex, int scale) {
     if (cached_.isNull()) return;
-    if (scale != scale_) return;          // base image was rendered at a different scale
+    if (scale != scale_) return;
     if (x < 0 || y < 0 || x >= width_ || y >= height_) return;
 
     const QRgb rgb = colorOf(static_cast<uint8_t>(colorIndex)).rgb();

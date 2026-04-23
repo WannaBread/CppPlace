@@ -16,8 +16,6 @@ NetworkWorker::~NetworkWorker() = default;
 void NetworkWorker::setBaseUrl(const QUrl& url) { base_url_ = url; }
 
 void NetworkWorker::init() {
-    // Created lazily so that the QNAM lives in the worker thread, not in the
-    // thread that constructed NetworkWorker (Qt strongly requires this).
     nam_ = new QNetworkAccessManager(this);
 }
 

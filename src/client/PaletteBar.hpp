@@ -9,8 +9,6 @@ class QButtonGroup;
 
 namespace cppplace::client {
 
-/// Horizontal strip of color swatches. Emits colorSelected(index) when the
-/// user picks one. Visually styled via QSS (see resources/styles.qss).
 class PaletteBar : public QWidget {
     Q_OBJECT
 public:
@@ -24,7 +22,7 @@ signals:
 
 private:
     QButtonGroup* group_   = nullptr;
-    int           current_ = 5; // start on Red — visible on white background
+    int           current_ = 5;
 };
 
 } // namespace cppplace::client
