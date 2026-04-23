@@ -46,6 +46,7 @@ private slots:
     void onPlaceFailed(int status, const QString& message);
     void onNetworkError(const QString& message);
     void onImageReady(const QImage& image);
+    void onScaleChanged(int scale);
 
 private:
     void buildUi();

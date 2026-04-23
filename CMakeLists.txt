@@ -58,6 +58,10 @@ target_link_libraries(cppplace_core PUBLIC
     Boost::thread Boost::asio Boost::beast Boost::uuid Boost::headers
     nlohmann_json::nlohmann_json)
 
+if (WIN32)
+    target_link_libraries(cppplace_core PUBLIC ws2_32 mswsock)
+endif()
+
 # ── Server executable ───────────────────────────────────────────────────────────
 add_executable(cppplace_server src/server/main.cpp)
 target_link_libraries(cppplace_server PRIVATE cppplace_core)

@@ -8,6 +8,7 @@
 #include "common/Result.hpp"
 
 #include <boost/thread/shared_mutex.hpp>
+#include <boost/thread/lock_types.hpp>
 #include <memory>
 #include <set>
 #include <string>

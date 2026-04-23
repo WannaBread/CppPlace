@@ -21,14 +21,10 @@ public:
     void setPalette(std::vector<QColor> palette);
 
 public slots:
-    /// Render a full snapshot. `scale` is an integer pixel-size multiplier
-    /// (1 means one logical pixel == one screen pixel).
     void renderCanvas(int width, int height,
                       const std::vector<uint8_t>& pixels, int scale);
-
-    /// Patch an already-rendered image (avoids a full redraw on every
-    /// single-pixel update).
     void renderPatch(int x, int y, int colorIndex, int scale);
+    void rescale(int scale);
 
 signals:
     void imageReady(const QImage& image);
@@ -36,11 +32,12 @@ signals:
 private:
     QColor colorOf(uint8_t index) const;
 
-    std::vector<QColor> palette_;
-    QImage              cached_;     // last rendered image, used by renderPatch
-    int                 scale_ = 1;
-    int                 width_ = 0;
-    int                 height_ = 0;
+    std::vector<QColor>   palette_;
+    QImage                cached_;
+    std::vector<uint8_t>  pixels_;
+    int                   scale_  = 1;
+    int                   width_  = 0;
+    int                   height_ = 0;
 };
 
 } // namespace cppplace::client

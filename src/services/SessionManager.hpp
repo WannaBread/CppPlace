@@ -1,6 +1,7 @@
 #pragma once
 
 #include <boost/thread/shared_mutex.hpp>
+#include <boost/thread/lock_types.hpp>
 #include <unordered_map>
 #include <string>
 #include <string_view>

@@ -8,6 +8,7 @@
 
 #include <QThread>
 #include <QScrollArea>
+#include <QScrollBar>
 #include <QLabel>
 #include <QStatusBar>
 #include <QTimer>
@@ -52,6 +53,7 @@ void MainWindow::buildUi() {
     scroll_->setWidget(view_);
     scroll_->setAlignment(Qt::AlignCenter);
     scroll_->setBackgroundRole(QPalette::Dark);
+    scroll_->viewport()->setMouseTracking(true);
     root->addWidget(scroll_, 1);
 
     setCentralWidget(central);
@@ -61,6 +63,14 @@ void MainWindow::buildUi() {
 
     connect(view_, &CanvasView::pixelClicked,
             this,  &MainWindow::onPixelClicked);
+    connect(view_, &CanvasView::scaleChanged,
+            this,  &MainWindow::onScaleChanged);
+    connect(view_, &CanvasView::panRequested, this, [this](int dx, int dy) {
+        scroll_->horizontalScrollBar()->setValue(
+            scroll_->horizontalScrollBar()->value() + dx);
+        scroll_->verticalScrollBar()->setValue(
+            scroll_->verticalScrollBar()->value() + dy);
+    });
 }
 
 void MainWindow::startWorkers() {
@@ -163,6 +173,12 @@ void MainWindow::onNetworkError(const QString& message) {
 
 void MainWindow::onImageReady(const QImage& image) {
     view_->setImage(image);
+}
+
+void MainWindow::onScaleChanged(int scale) {
+    scale_ = scale;
+    QMetaObject::invokeMethod(renderer_, "rescale", Qt::QueuedConnection,
+        Q_ARG(int, scale));
 }
 
 } // namespace cppplace::client

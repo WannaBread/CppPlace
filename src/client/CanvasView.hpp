@@ -5,9 +5,6 @@
 
 namespace cppplace::client {
 
-/// Pure-display widget. Draws whatever QImage CanvasRenderer hands it and
-/// translates mouse clicks into (x, y) canvas coordinates. No threading, no
-/// network — those live elsewhere.
 class CanvasView : public QWidget {
     Q_OBJECT
 public:
@@ -21,14 +18,24 @@ public slots:
 
 signals:
     void pixelClicked(int x, int y);
+    void scaleChanged(int scale);
+    void panRequested(int dx, int dy);
 
 protected:
     void paintEvent(QPaintEvent* event) override;
     void mousePressEvent(QMouseEvent* event) override;
+    void mouseMoveEvent(QMouseEvent* event) override;
+    void mouseReleaseEvent(QMouseEvent* event) override;
+    void leaveEvent(QEvent* event) override;
+    void wheelEvent(QWheelEvent* event) override;
 
 private:
     QImage image_;
-    int    scale_ = 4;
+    int    scale_       = 4;
+    int    hover_x_     = -1;
+    int    hover_y_     = -1;
+    bool   dragging_    = false;
+    QPoint drag_last_;
 };
 
 } // namespace cppplace::client

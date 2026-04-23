@@ -35,6 +35,7 @@ void CanvasRenderer::renderCanvas(int width, int height,
     width_  = width;
     height_ = height;
     scale_  = scale;
+    pixels_ = pixels;
 
     QImage img(width * scale, height * scale, QImage::Format_RGB32);
 
@@ -68,6 +69,11 @@ void CanvasRenderer::renderPatch(int x, int y, int colorIndex, int scale) {
         for (int sx = 0; sx < scale; ++sx) dst[sx] = rgb;
     }
     emit imageReady(cached_);
+}
+
+void CanvasRenderer::rescale(int scale) {
+    if (pixels_.empty() || width_ == 0 || height_ == 0 || scale <= 0) return;
+    renderCanvas(width_, height_, pixels_, scale);
 }
 
 } // namespace cppplace::client
