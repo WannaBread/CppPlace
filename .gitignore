@@ -9,13 +9,19 @@ out/
 *.swp
 *.swo
 *~
+.cache/
+
+# OS
 .DS_Store
+Thumbs.db
 
 # Compiled
 *.o
 *.a
 *.so
 *.dylib
+*.exe
+*.pdb
 
 # CMake
 CMakeCache.txt

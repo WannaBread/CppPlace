@@ -29,4 +29,4 @@ private:
     std::vector<Pixel> pixels_;
 };
 
-}
+} // namespace cppplace
