@@ -84,7 +84,7 @@ RequestHandler::Response RequestHandler::handleGetCanvas(const Request& /*req*/)
     const auto pixels  = canvas_service_->getCanvasState();
     const size_t width  = canvas_service_->getWidth();
     const size_t height = canvas_service_->getHeight();
-    const size_t online = canvas_service_->getOnlineCount();
+    const size_t online = session_manager_->activeSessionCount();
 
     std::vector<uint8_t> colors;
     colors.reserve(pixels.size());
